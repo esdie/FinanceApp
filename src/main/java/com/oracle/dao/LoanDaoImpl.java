@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -94,18 +95,25 @@ public class LoanDaoImpl implements LoanDao {
 
 	@Override
 	public List<LoanApplication> searchLoanApplicationByDate(String start_date, String end_date) {
+		
+
+		System.out.println(start_date);
+		System.out.println(end_date);
 		Date startDate = Date.valueOf(start_date);
 		Date endDate = Date.valueOf(end_date);
-		
+		System.out.println("After change: "+startDate+" "+endDate);
 		Connection con = dbConnection.connect();
 		List<LoanApplication> resultList = new ArrayList<>();
+		System.out.println("dao me");
 		try {
 			String sql = "select * from loan_application where application_date between ? and ?";
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setDate(1, startDate);
 			pstmt.setDate(2, endDate);
 			ResultSet rs = pstmt.executeQuery();
+			System.out.println("Query");
 			while(rs.next()) {
+				System.out.println("result k andar");
 				LoanApplication loanApplication = new LoanApplication();
 				loanApplication.setLoan_application_number(rs.getString("loan_application_number"));
 				loanApplication.setCustomer_id(rs.getString("customer_id"));
@@ -121,7 +129,7 @@ public class LoanDaoImpl implements LoanDao {
 				
 
 				resultList.add(loanApplication);
-
+System.out.println(resultList.size());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -146,6 +154,7 @@ public class LoanDaoImpl implements LoanDao {
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, loan_application_number);
 			ResultSet rs = pstmt.executeQuery();
+			
 			while(rs.next()) {
 				LoanApplication loanApplication = new LoanApplication();
 				loanApplication.setLoan_application_number(rs.getString("loan_application_number"));
@@ -225,7 +234,7 @@ public class LoanDaoImpl implements LoanDao {
 			String application_number=UUID.randomUUID().toString();	
 			
 			Date application_date = new Date(System.currentTimeMillis());
-			String query="INSERT INTO LOAN_APPLICATION VALUES(?,?,?,?,?,?,?,?,?)";
+			String query="INSERT INTO LOAN_APPLICATION VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1,application_number);
 			ps.setString(2,a.getCustomer_id());

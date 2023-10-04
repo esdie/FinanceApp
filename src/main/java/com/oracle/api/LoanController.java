@@ -61,7 +61,7 @@ public class LoanController {
 		return loanService.applyLoan(a);
 	}
 	@DeleteMapping("/loanApplication/{loan_application_number}")
-	public LoanApplication cancelLoan(@PathVariable String loan_application_number) {
+	public List<LoanApplication> cancelLoan(@PathVariable String loan_application_number) {
 		return null;
 	}
 }
