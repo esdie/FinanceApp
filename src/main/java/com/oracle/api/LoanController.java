@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,7 @@ public class LoanController {
 		return "test successful";
 	}
 	
-	@GetMapping("/loantype")
+	@GetMapping("/loantypes")
 	public List<Loans> getLoanType(){
 		return loanService.getLoansService();
 	}
@@ -56,8 +57,11 @@ public class LoanController {
 	}
 
 	@PostMapping("/loanApplication/apply")
-	public LoanApplication applyLoan(@RequestBody LoanApplication a)
-	{
+	public LoanApplication applyLoan(@RequestBody LoanApplication a){
 		return loanService.applyLoan(a);
+	}
+	@DeleteMapping("/loanApplication/{loan_application_number}")
+	public LoanApplication cancelLoan(@PathVariable String loan_application_number) {
+		return null;
 	}
 }
