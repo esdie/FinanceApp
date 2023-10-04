@@ -230,9 +230,9 @@ System.out.println(resultList.size());
 		Connection con=	dbConnection.connect();
 		try {
 			System.out.println("in here");
-			
+			System.out.println(a.getClerk_id());
 			String application_number=UUID.randomUUID().toString();	
-			
+			System.out.println("uuid: "+a.getLoan_application_number());
 			Date application_date = new Date(System.currentTimeMillis());
 			String query="INSERT INTO LOAN_APPLICATION VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement ps = con.prepareStatement(query);
@@ -249,6 +249,7 @@ System.out.println(resultList.size());
 			ps.setString(11, a.getBranch());
 			
 			int res=ps.executeUpdate();
+		
 			System.out.println("sss"+res);
 			a.setApplication_date(application_date);
 			a.setLoan_application_number(application_number);

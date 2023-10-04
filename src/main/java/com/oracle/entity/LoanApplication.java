@@ -1,6 +1,7 @@
 package com.oracle.entity;
 
 import java.sql.Date;
+import java.util.UUID;
 
 public class LoanApplication {
 	
