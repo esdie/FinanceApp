@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ import com.oracle.service.LoanService;
 
 @RestController
 @CrossOrigin
-@RequestMapping
+@RequestMapping("/")
 public class LoanController {
 	
 	@Autowired
@@ -60,8 +61,12 @@ public class LoanController {
 	public LoanApplication applyLoan(@RequestBody LoanApplication a){
 		return loanService.applyLoan(a);
 	}
-	@DeleteMapping("/loanApplication/{loan_application_number}")
+	@DeleteMapping("/loanApplication/cancel/{loan_application_number}")
 	public List<LoanApplication> cancelLoan(@PathVariable String loan_application_number) {
-		return null;
+		return loanService.cancelLoanApplicationService(loan_application_number);
+	}
+	@PutMapping("/loanApplication/{message}/{loan_application_number}")
+	public List<LoanApplication> approveOrRejectLoan(@PathVariable String message, @PathVariable String loan_application_number ){
+		return loanService.approveOrRejectLoanApplicationService(loan_application_number, message);
 	}
 }

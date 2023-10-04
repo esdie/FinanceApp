@@ -67,10 +67,10 @@ public class LoanServiceImpl implements LoanService{
 	}
 
 	@Override
-	public List<LoanApplication> searchLoanApplicationByTypeService(int type_code) {
+	public List<LoanApplication> searchLoanApplicationByTypeService(int loan_code) {
 		List<LoanApplication> result = new ArrayList<LoanApplication>();
 		try {
-			result = loanDao.searchLoanApplicationByType(type_code);
+			result = loanDao.searchLoanApplicationByType(loan_code);
 			if(result.size() == 0) throw new LoanApplicationException()	;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,5 +85,33 @@ public class LoanServiceImpl implements LoanService{
 		
 		return loanDao.applyLoan(a);
 	}
+
+@Override
+public List<LoanApplication> cancelLoanApplicationService(String loan_application_number) {
+	List<LoanApplication> result = new ArrayList<LoanApplication>();
+	try {
+		result = loanDao.cancelLoanApplication(loan_application_number);
+		if(result.size() == 0) throw new LoanApplicationException()	;
+	} catch (Exception e) {
+		e.printStackTrace();
+		String msg = "The loan application that you are trying to delete is nowhere to be found";
+		throw new LoanApplicationException(msg);
+	}
+	return result;
+}
+
+@Override
+public List<LoanApplication> approveOrRejectLoanApplicationService(String loan_application_number, String value) {
+	List<LoanApplication> result = new ArrayList<LoanApplication>();
+	try {
+		result = loanDao.approveOrRejectLoanApplication(loan_application_number, value);
+		if(result.size() == 0) throw new LoanApplicationException()	;
+	} catch (Exception e) {
+		e.printStackTrace();
+		String msg = "The loan application that you are trying to "+ value +" is nowhere to be found";
+		throw new LoanApplicationException(msg);
+	}
+	return result;
+}
 
 }

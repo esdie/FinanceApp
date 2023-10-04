@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.oracle.entity.LoanApplication;
 import com.oracle.entity.Loans;
+import com.oracle.exception.LoanApplicationException;
 import com.oracle.repository.DBConnection;
 @Component
 public class LoanDaoImpl implements LoanDao {
@@ -226,33 +227,33 @@ System.out.println(resultList.size());
 	}
 
 	@Override
-	public LoanApplication applyLoan(LoanApplication a) {
+	public LoanApplication applyLoan(LoanApplication application) {
 		Connection con=	dbConnection.connect();
 		try {
 			System.out.println("in here");
-			System.out.println(a.getClerk_id());
+			System.out.println(application.getClerk_id());
 			String application_number=UUID.randomUUID().toString();	
-			System.out.println("uuid: "+a.getLoan_application_number());
+			//System.out.println("uuid: "+application.getLoan_application_number());
 			Date application_date = new Date(System.currentTimeMillis());
 			String query="INSERT INTO LOAN_APPLICATION VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1,application_number);
-			ps.setString(2,a.getCustomer_id());
-			ps.setInt(3,a.getLoan_id());
-			ps.setString(4,a.getClerk_id());
-			ps.setString(5, a.getFirst_name());
-			ps.setString(6,a.getLast_name());
-			ps.setInt(7,a.getRequested_amount());
-			ps.setInt(8, a.getRequested_tenure());
+			ps.setString(2,application.getCustomer_id());
+			ps.setInt(3,application.getLoan_id());
+			ps.setString(4,application.getClerk_id());
+			ps.setString(5, application.getFirst_name());
+			ps.setString(6,application.getLast_name());
+			ps.setInt(7,application.getRequested_amount());
+			ps.setInt(8, application.getRequested_tenure());
 			ps.setDate(9,application_date);
-			ps.setString(10, a.getApplication_status());
-			ps.setString(11, a.getBranch());
+			ps.setString(10, application.getApplication_status());
+			ps.setString(11, application.getBranch());
 			
 			int res=ps.executeUpdate();
 		
 			System.out.println("sss"+res);
-			a.setApplication_date(application_date);
-			a.setLoan_application_number(application_number);
+			application.setApplication_date(application_date);
+			application.setLoan_application_number(application_number);
 			
 		} catch (Exception e) {
 			System.out.println(e);
@@ -265,7 +266,65 @@ System.out.println(resultList.size());
 				e.printStackTrace();
 			}
 		}
-		return a;
+		return application;
 	}
+
+	@Override
+	public List<LoanApplication> cancelLoanApplication(String loan_application_number) {
+		Connection con=	dbConnection.connect();
+		List<LoanApplication> result = null;
+		try {
+			String query="DELETE FROM LOAN_APPLICATION WHERE LOAN_APPLICATION_NUMBER = ?";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1,loan_application_number);
+			int res=ps.executeUpdate();
+			if(res ==0) {
+				throw new LoanApplicationException();
+			}
+			result = getAllLoanApplication();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<LoanApplication> approveOrRejectLoanApplication(String loan_application_number, String value) {
+		Connection con=	dbConnection.connect();
+		List<LoanApplication> result = null;
+		try {
+			
+			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = ? WHERE LOAN_APPLICATION_NUMBER = ?";
+			PreparedStatement ps = con.prepareStatement(query);
+			value = (value.equals("approve")?"APPROVED": "REJECTED");
+			ps.setString(1, value);
+			ps.setString(2, loan_application_number);
+			int res=ps.executeUpdate();
+			if(res ==0) {
+				throw new LoanApplicationException();
+			}
+			result = getAllLoanApplication();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	
+	
 
 }
