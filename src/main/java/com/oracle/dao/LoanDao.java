@@ -17,5 +17,6 @@ public interface LoanDao {
 	 public List<LoanApplication> rejectLoanApplication(String loan_application_number);
 	 public List<LoanApplication> approveLoanApplication(String loan_application_number, double amount_sanctioned, int tenure);
 	 public List<LoanApplication> searchLoanApplicationByCustomer(String customer_id);
+	public List<LoanApplication> searchLoanApplicationByStatus(String loan_status);
 
 }
