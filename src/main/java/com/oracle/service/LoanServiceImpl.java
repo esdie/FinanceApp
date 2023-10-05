@@ -124,7 +124,7 @@ public List<LoanApplication> approveLoanApplicationService(String loan_applicati
 		if(result.size() == 0) throw new LoanApplicationException()	;
 	} catch (Exception e) {
 		e.printStackTrace();
-		String msg = "The loan application that you are trying to approve is nowhere to be found";
+		String msg = "The loan application that you are trying to approve has already been approved";
 		throw new LoanApplicationException(msg);
 	}
 	return result;
