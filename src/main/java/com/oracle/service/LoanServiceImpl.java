@@ -145,4 +145,19 @@ public List<LoanApplication> searchLoanApplicationByCustomerService(String custo
 	return result;
 }
 
+@Override
+public List<LoanApplication> searchLoanApplicationByStatusService(String loan_status) {
+	List<LoanApplication> result = new ArrayList<LoanApplication>();
+	try {
+		result = loanDao.searchLoanApplicationByStatus(loan_status);
+		//System.out.println(result);
+		if(result.size() == 0) throw new LoanApplicationException()	;
+	} catch (Exception e) {
+		e.printStackTrace();
+		String msg = "No applicaton found";
+		throw new LoanApplicationException(msg);
+	}
+	return result;
+}
+
 }
