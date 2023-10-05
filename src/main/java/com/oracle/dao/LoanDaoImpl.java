@@ -68,7 +68,7 @@ public class LoanDaoImpl implements LoanDao {
 				LoanApplication loanApplication = new LoanApplication();
 				loanApplication.setLoan_application_number(rs.getString("loan_application_number"));
 				loanApplication.setCustomer_id(rs.getString("customer_id"));
-				loanApplication.setLoan_id(rs.getInt("loan_code"));
+				loanApplication.setLoan_id(rs.getInt("loan_id"));
 				loanApplication.setClerk_id(rs.getString("clerk_id"));
 				loanApplication.setFirst_name(rs.getString("first_name"));
 				loanApplication.setLast_name(rs.getString("last_name"));
