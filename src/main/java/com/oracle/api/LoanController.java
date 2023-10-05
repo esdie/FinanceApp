@@ -48,13 +48,18 @@ public class LoanController {
 	}
 	
 	@GetMapping("/loanApplication/number/{loan_application_number}")
-	public List<LoanApplication> searchApplicationByNumber(@PathVariable String loan_application_number){
+	public LoanApplication searchApplicationByNumber(@PathVariable String loan_application_number){
 		return loanService.searchLoanApplicationByNumberService(loan_application_number);
 	}
 	
 	@GetMapping("/loanApplication/type/{type_code}")
 	public List<LoanApplication> searchApplicationByType(@PathVariable int type_code){
 		return loanService.searchLoanApplicationByTypeService(type_code);
+	}
+	
+	@GetMapping("/loanApplication/customer/{customer_id}")
+	public List<LoanApplication> searchApplicationByCustomer(@PathVariable String customer_id){
+		return loanService.searchLoanApplicationByCustomerService(customer_id);
 	}
 
 	@PostMapping("/loanApplication/apply")
@@ -65,8 +70,12 @@ public class LoanController {
 	public List<LoanApplication> cancelLoan(@PathVariable String loan_application_number) {
 		return loanService.cancelLoanApplicationService(loan_application_number);
 	}
-	@PutMapping("/loanApplication/{message}/{loan_application_number}")
-	public List<LoanApplication> approveOrRejectLoan(@PathVariable String message, @PathVariable String loan_application_number ){
-		return loanService.approveOrRejectLoanApplicationService(loan_application_number, message);
+	@PutMapping("/loanApplication/reject/{loan_application_number}")
+	public List<LoanApplication> rejectLoan(@PathVariable String loan_application_number ){
+		return loanService.rejectLoanApplicationService(loan_application_number);
+	}
+	@PutMapping("/loanApplication/approve/{loan_application_number}/{amount}/{tenure}")
+	public List<LoanApplication> approveLoan(@PathVariable String loan_application_number, @PathVariable double amount, @PathVariable int tenure ){
+		return loanService.approveLoanApplicationService(loan_application_number, amount, tenure);
 	}
 }
