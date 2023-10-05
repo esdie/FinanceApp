@@ -371,10 +371,11 @@ System.out.println(resultList.size());
 		List<LoanApplication> result = null;
 		try {
 			
-			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = 'APPROVED' WHERE LOAN_APPLICATION_NUMBER = ?";
+			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = 'APPROVED' WHERE LOAN_APPLICATION_NUMBER = ? AND APPLICATION_STATUS != 'APPROVED'";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1, loan_application_number);
 			int res=ps.executeUpdate();
+			System.out.println("res: "+res);
 			if(res ==0) {
 				throw new LoanApplicationException();
 			}
