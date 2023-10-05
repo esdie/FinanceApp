@@ -53,11 +53,12 @@ public class LoanServiceImpl implements LoanService{
 	}
 
 	@Override
-	public List<LoanApplication> searchLoanApplicationByNumberService(String loan_application_number) {
-		List<LoanApplication> result = new ArrayList<LoanApplication>();
+	public LoanApplication searchLoanApplicationByNumberService(String loan_application_number) {
+		LoanApplication result = null;
 		try {
 			result = loanDao.searchLoanApplicationByNumber(loan_application_number);
-			if(result.size() == 0) throw new LoanApplicationException()	;
+			//System.out.println("result: "+result);
+			if(result == null) throw new LoanApplicationException()	;
 		} catch (Exception e) {
 			e.printStackTrace();
 			String msg = "No applicaton found";
@@ -71,6 +72,7 @@ public class LoanServiceImpl implements LoanService{
 		List<LoanApplication> result = new ArrayList<LoanApplication>();
 		try {
 			result = loanDao.searchLoanApplicationByType(loan_code);
+			System.out.println(result);
 			if(result.size() == 0) throw new LoanApplicationException()	;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,14 +103,43 @@ public List<LoanApplication> cancelLoanApplicationService(String loan_applicatio
 }
 
 @Override
-public List<LoanApplication> approveOrRejectLoanApplicationService(String loan_application_number, String value) {
+public List<LoanApplication> rejectLoanApplicationService(String loan_application_number) {
 	List<LoanApplication> result = new ArrayList<LoanApplication>();
 	try {
-		result = loanDao.approveOrRejectLoanApplication(loan_application_number, value);
+		result = loanDao.rejectLoanApplication(loan_application_number);
 		if(result.size() == 0) throw new LoanApplicationException()	;
 	} catch (Exception e) {
 		e.printStackTrace();
-		String msg = "The loan application that you are trying to "+ value +" is nowhere to be found";
+		String msg = "The loan application that you are trying to reject is nowhere to be found";
+		throw new LoanApplicationException(msg);
+	}
+	return result;
+}
+
+@Override
+public List<LoanApplication> approveLoanApplicationService(String loan_application_number, double amount_sanctioned, int tenure) {
+	List<LoanApplication> result = new ArrayList<LoanApplication>();
+	try {
+		result = loanDao.approveLoanApplication(loan_application_number, amount_sanctioned, tenure);
+		if(result.size() == 0) throw new LoanApplicationException()	;
+	} catch (Exception e) {
+		e.printStackTrace();
+		String msg = "The loan application that you are trying to approve is nowhere to be found";
+		throw new LoanApplicationException(msg);
+	}
+	return result;
+}
+
+@Override
+public List<LoanApplication> searchLoanApplicationByCustomerService(String customer_id) {
+	List<LoanApplication> result = new ArrayList<LoanApplication>();
+	try {
+		result = loanDao.searchLoanApplicationByCustomer(customer_id);
+		//System.out.println(result);
+		if(result.size() == 0) throw new LoanApplicationException()	;
+	} catch (Exception e) {
+		e.printStackTrace();
+		String msg = "No applicaton found";
 		throw new LoanApplicationException(msg);
 	}
 	return result;

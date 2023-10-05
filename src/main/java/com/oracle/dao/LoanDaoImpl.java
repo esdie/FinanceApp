@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.oracle.entity.LoanAccount;
 import com.oracle.entity.LoanApplication;
 import com.oracle.entity.Loans;
 import com.oracle.exception.LoanApplicationException;
@@ -146,9 +147,9 @@ System.out.println(resultList.size());
 	}
 
 	@Override
-	public List<LoanApplication> searchLoanApplicationByNumber(String loan_application_number) {
+	public LoanApplication searchLoanApplicationByNumber(String loan_application_number) {
 		Connection con = dbConnection.connect();
-		List<LoanApplication> resultList = new ArrayList<>();
+		LoanApplication loanApplication = null;
 		
 		try {
 			String sql = "select * from loan_application where loan_application_number =?";
@@ -157,7 +158,7 @@ System.out.println(resultList.size());
 			ResultSet rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
-				LoanApplication loanApplication = new LoanApplication();
+				loanApplication = new LoanApplication();
 				loanApplication.setLoan_application_number(rs.getString("loan_application_number"));
 				loanApplication.setCustomer_id(rs.getString("customer_id"));
 				loanApplication.setLoan_id(rs.getInt("loan_code"));
@@ -169,9 +170,6 @@ System.out.println(resultList.size());
 				loanApplication.setApplication_date(rs.getDate("application_date"));
 				loanApplication.setApplication_status(rs.getString("application_status"));
 				loanApplication.setBranch(rs.getString("branch"));
-				
-
-				resultList.add(loanApplication);
 
 			}
 		} catch (SQLException e) {
@@ -184,7 +182,7 @@ System.out.println(resultList.size());
 				e.printStackTrace();
 			}
 		}
-		return resultList;
+		return loanApplication;
 	}
 
 	@Override
@@ -192,7 +190,7 @@ System.out.println(resultList.size());
 		Connection con = dbConnection.connect();
 		List<LoanApplication> resultList = new ArrayList<>();
 		try {
-			String sql = "select * from loan_application where loan_type_code =?";
+			String sql = "select * from loan_application where loan_code =?";
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, loan_code);
 			ResultSet rs = pstmt.executeQuery();
@@ -295,17 +293,60 @@ System.out.println(resultList.size());
 		return result;
 	}
 
+	public LoanAccount makeLoanAccount(LoanApplication loan_application, double amount_sanctioned, int tenure) {
+		LoanAccount account = null;
+		Connection con=	dbConnection.connect();
+		try {
+			account = new LoanAccount();
+			String account_number=UUID.randomUUID().toString();
+			Date application_date = new Date(System.currentTimeMillis());
+			String query="INSERT INTO LOAN_ACCOUNT VALUES(?,?,?,?,?,?,?,?,?,?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1,account_number);
+			account.setLoan_account_number(account_number);
+			ps.setString(2,loan_application.getLoan_application_number());
+			account.setLoan_application_number(loan_application.getLoan_application_number());
+			ps.setString(3, loan_application.getCustomer_id());
+			account.setCustomer_id(loan_application.getCustomer_id());
+			ps.setInt(4,loan_application.getLoan_id());
+			account.setLoan_id(loan_application.getLoan_id());
+			ps.setDouble(5, amount_sanctioned);
+			account.setLoan_amount_sanctioned(amount_sanctioned);
+			ps.setString(6, "ONGOING");
+			account.setLoan_status("ONGOING");
+			ps.setDouble(7,amount_sanctioned / tenure);
+			account.setEmi(amount_sanctioned / tenure);
+			ps.setDouble(8, 0);
+			account.setDisbursed_amount(0);
+			ps.setInt(9,tenure);
+			account.setLoan_tenure(tenure);
+			ps.setDate(10, application_date);
+			account.setApproval_date(application_date);
+			int res=ps.executeUpdate();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+			
+		return account;
+	}
 	@Override
-	public List<LoanApplication> approveOrRejectLoanApplication(String loan_application_number, String value) {
+	public List<LoanApplication> rejectLoanApplication(String loan_application_number) {
 		Connection con=	dbConnection.connect();
 		List<LoanApplication> result = null;
 		try {
 			
-			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = ? WHERE LOAN_APPLICATION_NUMBER = ?";
+			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = 'REJECTED' WHERE LOAN_APPLICATION_NUMBER = ?";
 			PreparedStatement ps = con.prepareStatement(query);
-			value = (value.equals("approve")?"APPROVED": "REJECTED");
-			ps.setString(1, value);
-			ps.setString(2, loan_application_number);
+			ps.setString(1, loan_application_number);
 			int res=ps.executeUpdate();
 			if(res ==0) {
 				throw new LoanApplicationException();
@@ -322,6 +363,76 @@ System.out.println(resultList.size());
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public List<LoanApplication> approveLoanApplication(String loan_application_number, double amount_sanctioned, int tenure) {
+		Connection con=	dbConnection.connect();
+		List<LoanApplication> result = null;
+		try {
+			
+			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = 'APPROVED' WHERE LOAN_APPLICATION_NUMBER = ?";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, loan_application_number);
+			int res=ps.executeUpdate();
+			if(res ==0) {
+				throw new LoanApplicationException();
+			}
+			LoanApplication appl = searchLoanApplicationByNumber(loan_application_number);
+			System.out.println(makeLoanAccount(appl, amount_sanctioned, tenure));
+			result = getAllLoanApplication();
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<LoanApplication> searchLoanApplicationByCustomer(String customer_id) {
+		Connection con = dbConnection.connect();
+		List<LoanApplication> resultList = new ArrayList<>();
+		try {
+			String sql = "select * from loan_application where customer_id =?";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, customer_id);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				LoanApplication loanApplication = new LoanApplication();
+				loanApplication.setLoan_application_number(rs.getString("loan_application_number"));
+				loanApplication.setCustomer_id(rs.getString("customer_id"));
+				loanApplication.setLoan_id(rs.getInt("loan_code"));
+				loanApplication.setClerk_id(rs.getString("clerk_id"));
+				loanApplication.setFirst_name(rs.getString("first_name"));
+				loanApplication.setLast_name(rs.getString("last_name"));
+				loanApplication.setRequested_amount(rs.getInt("requested_amount"));
+				loanApplication.setRequested_tenure(rs.getInt("requested_tenure"));
+				loanApplication.setApplication_date(rs.getDate("application_date"));
+				loanApplication.setApplication_status(rs.getString("application_status"));
+				loanApplication.setBranch(rs.getString("branch"));
+				//System.out.println("loanApplication "+loanApplication);
+
+				resultList.add(loanApplication);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		//System.out.println("size: "+resultList.size());
+		return resultList;
 	}
 
 	
