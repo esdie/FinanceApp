@@ -160,4 +160,19 @@ public List<LoanApplication> searchLoanApplicationByStatusService(String loan_st
 	return result;
 }
 
+@Override
+public List<LoanApplication> searchLoanApplicationByClerkIdService(String clerk_id) {
+	List<LoanApplication> result = new ArrayList<LoanApplication>();
+	try {
+		result = loanDao.searchLoanApplicationByClerkId(clerk_id);
+		System.out.println(result);
+		if(result.size() == 0) throw new LoanApplicationException()	;
+	} catch (Exception e) {
+		e.printStackTrace();
+		String msg = "No applicaton found with clerk id";
+		throw new LoanApplicationException(msg);
+	}
+	return result;
+}
+
 }

@@ -65,7 +65,11 @@ public class LoanController {
 	public List<LoanApplication> searchApplicationByStatus(@PathVariable String loan_status){
 		return loanService.searchLoanApplicationByStatusService(loan_status);
 	}
-
+	@GetMapping("/loanApplication/clerk/{clerk_id}")
+	public List<LoanApplication> searchApplicationByType(@PathVariable String clerk_id){
+		return loanService.searchLoanApplicationByClerkIdService(clerk_id);
+	}
+	
 	@PostMapping("/loanApplication/apply")
 	public LoanApplication applyLoan(@RequestBody LoanApplication a){
 		return loanService.applyLoan(a);

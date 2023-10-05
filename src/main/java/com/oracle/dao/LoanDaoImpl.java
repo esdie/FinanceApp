@@ -478,6 +478,45 @@ System.out.println(resultList.size());
 		return resultList;
 	}
 
+	@Override
+	public List<LoanApplication> searchLoanApplicationByClerkId(String clerk_id) {
+		Connection con = dbConnection.connect();
+		List<LoanApplication> resultList = new ArrayList<>();
+		try {
+			String sql = "select * from loan_application where clerk_id =?";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, clerk_id);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				LoanApplication loanApplication = new LoanApplication();
+				loanApplication.setLoan_application_number(rs.getString("loan_application_number"));
+				loanApplication.setCustomer_id(rs.getString("customer_id"));
+				loanApplication.setLoan_id(rs.getInt("loan_code"));
+				loanApplication.setClerk_id(rs.getString("clerk_id"));
+				loanApplication.setFirst_name(rs.getString("first_name"));
+				loanApplication.setLast_name(rs.getString("last_name"));
+				loanApplication.setRequested_amount(rs.getInt("requested_amount"));
+				loanApplication.setRequested_tenure(rs.getInt("requested_tenure"));
+				loanApplication.setApplication_date(rs.getDate("application_date"));
+				loanApplication.setApplication_status(rs.getString("application_status"));
+				loanApplication.setBranch(rs.getString("branch"));
+				
+
+				resultList.add(loanApplication);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return resultList;
+	}
+
 	
 	
 

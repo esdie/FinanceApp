@@ -17,5 +17,5 @@ public interface LoanService {
 	public LoanApplication applyLoan(LoanApplication a);
 	public List<LoanApplication> searchLoanApplicationByCustomerService(String customer_id);
 	public List<LoanApplication> searchLoanApplicationByStatusService(String loan_status);
-	
+	public List<LoanApplication> searchLoanApplicationByClerkIdService(String clerk_id);
 }
