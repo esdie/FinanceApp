@@ -71,8 +71,8 @@ public class LoanController {
 	}
 	
 	@PostMapping("/loanApplication/apply")
-	public LoanApplication applyLoan(@RequestBody LoanApplication a){
-		return loanService.applyLoan(a);
+	public LoanApplication appapplyLoanlyLoan(@RequestBody LoanApplication a){
+		return loanService.applyLoanService(a);
 	}
 	@DeleteMapping("/loanApplication/cancel/{loan_application_number}")
 	public List<LoanApplication> cancelLoan(@PathVariable String loan_application_number) {

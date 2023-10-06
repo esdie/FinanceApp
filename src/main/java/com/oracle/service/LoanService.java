@@ -14,7 +14,7 @@ public interface LoanService {
 	public List<LoanApplication> cancelLoanApplicationService(String loan_application_number);
 	public List<LoanApplication> rejectLoanApplicationService(String loan_application_number);
 	public List<LoanApplication> approveLoanApplicationService(String loan_application_number, double amount_sanctioned, int tenure);
-	public LoanApplication applyLoan(LoanApplication a);
+	public LoanApplication applyLoanService(LoanApplication a);
 	public List<LoanApplication> searchLoanApplicationByCustomerService(String customer_id);
 	public List<LoanApplication> searchLoanApplicationByStatusService(String loan_status);
 	public List<LoanApplication> searchLoanApplicationByClerkIdService(String clerk_id);

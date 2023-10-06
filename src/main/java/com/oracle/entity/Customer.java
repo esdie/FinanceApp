@@ -2,6 +2,13 @@ package com.oracle.entity;
 
 
 public class Customer {
+	@Override
+	public String toString() {
+		return "Customer [customer_id=" + customer_id + ", first_name=" + first_name + ", last_name=" + last_name
+				+ ", contact_no=" + contact_no + ", email=" + email + ", gender=" + gender + ", pan_number="
+				+ pan_number + ", aadhar_number=" + aadhar_number + ", username=" + username + ", address=" + address
+				+ "]";
+	}
 	private String customer_id;
 	private String first_name;
 	private String last_name;
@@ -10,12 +17,18 @@ public class Customer {
 	private String email;
 	private String gender;
 	private String pan_number;
-	private int aadhar_number;
+	private String aadhar_number;
+	private String username;
 	
-	
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	private String address;
 	public Customer(String customer_id, String first_name, String last_name, String address, int contact_no,
-			String email, String gender, String pan_number, int aadhar_number) {
+			String email, String gender, String pan_number, String aadhar_number, String username) {
 		super();
 		this.customer_id = customer_id;
 		this.first_name = first_name;
@@ -26,6 +39,7 @@ public class Customer {
 		this.gender = gender;
 		this.pan_number = pan_number;
 		this.aadhar_number = aadhar_number;
+		this.username = username;
 	}
 	public Customer() {
 		
@@ -78,10 +92,10 @@ public class Customer {
 	public void setPan_number(String pan_number) {
 		this.pan_number = pan_number;
 	}
-	public int getAadhar_number() {
+	public String getAadhar_number() {
 		return aadhar_number;
 	}
-	public void setAadhar_number(int aadhar_number) {
+	public void setAadhar_number(String aadhar_number) {
 		this.aadhar_number = aadhar_number;
 	}
 	

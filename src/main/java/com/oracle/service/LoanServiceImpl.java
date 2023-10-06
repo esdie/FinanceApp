@@ -83,7 +83,7 @@ public class LoanServiceImpl implements LoanService{
 	}
 
 @Override
-	public LoanApplication applyLoan(LoanApplication a) {
+	public LoanApplication applyLoanService(LoanApplication a) {
 		
 		return loanDao.applyLoan(a);
 	}
