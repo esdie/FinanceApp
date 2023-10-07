@@ -9,8 +9,9 @@ public class Employee {
 	private String email;
 	private String employee_type;
 	private String branch ;
+	private String username;
 	public Employee(String employee_id, String first_name, String last_name, String gender, int contact_no,
-			String email, String employee_type, String branch) {
+			String email, String employee_type, String branch, String username) {
 		super();
 		this.employee_id = employee_id;
 		this.first_name = first_name;
@@ -20,6 +21,7 @@ public class Employee {
 		this.email = email;
 		this.employee_type = employee_type;
 		this.branch = branch;
+		this.username = username;
 	}
 	public Employee() {
 		
@@ -71,6 +73,12 @@ public class Employee {
 	}
 	public void setBranch(String branch) {
 		this.branch = branch;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	

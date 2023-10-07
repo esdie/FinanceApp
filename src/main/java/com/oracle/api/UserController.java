@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oracle.entity.Customer;
+import com.oracle.entity.Employee;
 import com.oracle.service.UserService;
 
 @RestController
@@ -53,8 +54,12 @@ public class UserController {
 	}
 	
 	@PostMapping("/user/customer/{username}")
-	public Customer  getCustomerFromUsername(@PathVariable String username) {
+	public Customer  getUserFromUsername(@PathVariable String username) {
 		return authService.getCustomerFromUsernameService(username);
 	}
 	
+	@PostMapping("/user/employee/{username}")
+	public Employee  getEmployeeFromUsername(@PathVariable String username) {
+		return authService.getEmployeeFromUsernameService(username);
+	}
 }

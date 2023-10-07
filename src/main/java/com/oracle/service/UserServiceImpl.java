@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.oracle.dao.UserDao;
 import com.oracle.entity.Customer;
+import com.oracle.entity.Employee;
 import com.oracle.exception.LoanApplicationException;
 
 @Component
@@ -97,6 +98,20 @@ public class UserServiceImpl implements UserService {
 			result = authDao.getCustomerFromUsername(username);
 			if(result == null)
 				throw new LoanApplicationException("Could not find customer");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw new LoanApplicationException(e.getMessage());
+		}
+		return result;
+	}
+	@Override
+	public Employee getEmployeeFromUsernameService(String username) {
+		Employee result = null;
+		try {
+			result = authDao.getEmployeeFromUsername(username);
+			if(result == null)
+				throw new LoanApplicationException("Could not find employee");
 		}
 		catch(Exception e) {
 			e.printStackTrace();

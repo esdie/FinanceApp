@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.oracle.entity.Customer;
+import com.oracle.entity.Employee;
 import com.oracle.entity.LoanAccount;
 import com.oracle.entity.LoanApplication;
 import com.oracle.entity.Users;
@@ -306,7 +307,8 @@ public class UserDaoImpl implements UserDao {
 		Customer customer = null;
 		Connection con = dbConnection.connect();
 		try {
-			String sql = "select * from customer where username = ?";
+			String sql;
+			sql = "select * from customer where username = ?";
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, username);
 			ResultSet rs = pstmt.executeQuery();
@@ -337,6 +339,43 @@ public class UserDaoImpl implements UserDao {
 			}
 		}
 		return customer;
+	}
+	@Override
+	public Employee getEmployeeFromUsername(String username) {
+		Employee employee = null;
+		Connection con = dbConnection.connect();
+		try {
+			String sql;
+			sql = "select * from employee where username = ?";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				employee = new Employee();
+				employee.setEmployee_id(rs.getString("employee_id"));
+				employee.setFirst_name(rs.getString("first_name"));
+				employee.setLast_name(rs.getString("last_name"));
+				employee.setEmployee_type(rs.getString("employee_type"));
+				employee.setContact_no(rs.getLong("contact_no"));
+				employee.setEmail(rs.getString("email"));
+				employee.setGender(rs.getString("gender"));
+				employee.setBranch(rs.getString("branch"));
+				employee.setUsername("username");
+			}
+			if(employee == null){
+				throw new LoanApplicationException("Could not find employee");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return employee;
 	}
 
 }

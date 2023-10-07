@@ -314,6 +314,7 @@ System.out.println(resultList.size());
 			account.setLoan_amount_sanctioned(amount_sanctioned);
 			ps.setString(6, "ONGOING");
 			account.setLoan_status("ONGOING");
+			double emi = 12;
 			ps.setDouble(7,amount_sanctioned / tenure);
 			account.setEmi(amount_sanctioned / tenure);
 			ps.setDouble(8, 0);

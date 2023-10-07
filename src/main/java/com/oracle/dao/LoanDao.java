@@ -8,7 +8,6 @@ import com.oracle.entity.*;
 public interface LoanDao {
 	 public List<Loans> getLoans();
 	 public List<LoanApplication> getAllLoanApplication();
-
 	 public List<LoanApplication> searchLoanApplicationByDate(String start_date, String end_date);
 	 public LoanApplication searchLoanApplicationByNumber(String loan_application_number);
 	 public List<LoanApplication> searchLoanApplicationByType(int loan_code);

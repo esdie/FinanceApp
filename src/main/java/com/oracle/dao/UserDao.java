@@ -1,6 +1,7 @@
 package com.oracle.dao;
 
 import com.oracle.entity.Customer;
+import com.oracle.entity.Employee;
 
 public interface UserDao {
 	public String login(String username, String password);
@@ -10,4 +11,5 @@ public interface UserDao {
 	public boolean updateUserContact(long contact, String member_id, String role);
 	public boolean updateUserPassword(String password, String member_id);
 	public Customer getCustomerFromUsername(String username);
+	public Employee getEmployeeFromUsername(String username);
 }
