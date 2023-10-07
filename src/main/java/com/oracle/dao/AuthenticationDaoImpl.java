@@ -112,10 +112,32 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			}
 			else {
 				Connection con = null;
+				String cust_id = UUID.randomUUID().toString();
+				try {
+					con = dbConnection.connect();
+					String sql = "insert into users values(?, ?, ?, ?)";
+					PreparedStatement pstmt = con.prepareStatement(sql);
+					pstmt = con.prepareStatement(sql);
+					pstmt.setString(1, username);
+					pstmt.setString(2, password);
+					pstmt.setString(3, "customer");
+					pstmt.setString(4, cust_id);
+					int res = pstmt.executeUpdate();
+				}	
+				catch(SQLException e) {
+					e.printStackTrace();
+				}
+				finally {
+					try {
+						con.close();
+					}
+					catch(SQLException e) {
+						e.printStackTrace();
+					}
+				}
 				try{
 					con = dbConnection.connect();
 					System.out.println(customer);
-					String cust_id = UUID.randomUUID().toString();
 					String sql = "insert into customer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement pstmt = con.prepareStatement(sql);
 					pstmt.setString(1, cust_id);
@@ -142,28 +164,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 						e.printStackTrace();
 					}
 				}
-				try {
-					con = dbConnection.connect();
-					String sql = "insert into users values(?, ?, ?, ?)";
-					PreparedStatement pstmt = con.prepareStatement(sql);
-					pstmt = con.prepareStatement(sql);
-					pstmt.setString(1, username);
-					pstmt.setString(2, password);
-					pstmt.setString(3, "customer");
-					pstmt.setString(4, customer.getCustomer_id());
-					int res = pstmt.executeUpdate();
-				}	
-				catch(SQLException e) {
-					e.printStackTrace();
-				}
-				finally {
-					try {
-						con.close();
-					}
-					catch(SQLException e) {
-						e.printStackTrace();
-					}
-				}
+				
 			}
 			
 		} catch (Exception e) {
