@@ -13,7 +13,7 @@ public class Customer {
 	private String first_name;
 	private String last_name;
 	
-	private int contact_no;
+	private long contact_no;
 	private String email;
 	private String gender;
 	private String pan_number;
@@ -68,10 +68,10 @@ public class Customer {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public int getContact_no() {
+	public long getContact_no() {
 		return contact_no;
 	}
-	public void setContact_no(int contact_no) {
+	public void setContact_no(long contact_no) {
 		this.contact_no = contact_no;
 	}
 	public String getEmail() {

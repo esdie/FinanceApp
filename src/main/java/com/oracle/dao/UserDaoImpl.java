@@ -20,7 +20,7 @@ import com.oracle.exception.LoanApplicationException;
 import com.oracle.repository.DBConnection;
 
 @Component
-public class AuthenticationDaoImpl implements AuthenticationDao {
+public class UserDaoImpl implements UserDao {
 	
 	@Autowired
 	DBConnection dbConnection;
@@ -64,6 +64,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			if(rs.next()) {
 				role = rs.getString("role");
 				user = rs.getString("username");
+				return role + " "+ user;
 			}
 			else {
 				throw new LoanApplicationException("Invalid Username/Password");
@@ -78,7 +79,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 				e.printStackTrace();
 			}
 		}
-		return role + " "+ user;
+		return null;
 	}
 	public boolean checkCustomer(String username) {
 		Connection con = dbConnection.connect();
@@ -203,6 +204,139 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			}
 		}
 		return memberId;
+	}
+	@Override
+	public boolean updateUserEmail(String email, String member_id, String role) {
+		Connection con = dbConnection.connect();
+		try {
+			String sql ="";
+			if(role.equals("customer")) {
+				sql = "update customer set email = ? where customer_id = ?";
+			}
+			else {
+				sql = "update employee set email = ? where employee_id = ?";
+			}
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, email);
+			pstmt.setString(2, member_id);
+			int count = pstmt.executeUpdate();
+			System.out.println(count);
+			if(count > 0) {
+				return true;
+			}
+			else {
+				throw new LoanApplicationException("Invalid Credentials");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	@Override
+	public boolean updateUserContact(long contact, String member_id, String role) {
+		Connection con = dbConnection.connect();
+		try {
+			String sql ="";
+			if(role.equals("customer")) {
+				sql = "update customer set contact_no = ? where customer_id = ?";
+			}
+			else {
+				sql = "update employee set contact_no = ? where employee_id = ?";
+			}
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setLong(1, contact);
+			pstmt.setString(2, member_id);
+			int count = pstmt.executeUpdate();
+			System.out.println(count);
+			if(count > 0) {
+				return true;
+			}
+			else {
+				throw new LoanApplicationException("Invalid Credentials");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	@Override
+	public boolean updateUserPassword(String password, String member_id) {
+		Connection con = dbConnection.connect();
+		try {
+			String sql = "update users set password = ? where member_id = ?";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, password);
+			pstmt.setString(2, member_id);
+			int count = pstmt.executeUpdate();
+			System.out.println(count);
+			if(count > 0) {
+				return true;
+			}
+			else {
+				throw new LoanApplicationException("Password could not be updated");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	@Override
+	public Customer getCustomerFromUsername(String username) {
+		Customer customer = null;
+		Connection con = dbConnection.connect();
+		try {
+			String sql = "select * from customer where username = ?";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				customer = new Customer();
+				customer.setCustomer_id(rs.getString("customer_id"));
+				customer.setFirst_name(rs.getString("first_name"));
+				customer.setLast_name(rs.getString("last_name"));
+				customer.setAddress(rs.getString("address"));
+				customer.setContact_no(rs.getLong("contact_no"));
+				customer.setEmail(rs.getString("email"));
+				customer.setGender(rs.getString("gender"));
+				customer.setPan_number(rs.getString("pan_number"));
+				customer.setAadhar_number("aadhar_number");
+				customer.setUsername("username");
+			}
+			if(customer == null){
+				throw new LoanApplicationException("Could not find customer");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return customer;
 	}
 
 }

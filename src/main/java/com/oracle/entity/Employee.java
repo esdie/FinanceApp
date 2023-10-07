@@ -5,7 +5,7 @@ public class Employee {
 	private String first_name;
 	private String last_name;
 	private String gender;
-	int contact_no;
+	private long contact_no;
 	private String email;
 	private String employee_type;
 	private String branch ;
@@ -48,10 +48,10 @@ public class Employee {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public int getContact_no() {
+	public long getContact_no() {
 		return contact_no;
 	}
-	public void setContact_no(int contact_no) {
+	public void setContact_no(long contact_no) {
 		this.contact_no = contact_no;
 	}
 	public String getEmail() {
