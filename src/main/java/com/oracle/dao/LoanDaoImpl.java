@@ -64,7 +64,6 @@ public class LoanDaoImpl implements LoanDao {
 			PreparedStatement pstmt=con.prepareStatement(sql);
 			ResultSet rs= pstmt.executeQuery();
 			System.out.println("connected.. + executed");
-			System.out.println(rs.next());
 			while( rs.next()) {
 				
 				LoanApplication loanApplication = new LoanApplication();
