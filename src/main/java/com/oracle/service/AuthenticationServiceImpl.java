@@ -36,5 +36,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		}
 		return result;
 	}
+	@Override
+	public String getUserMemberIdService(String username) {
+		String result = null;
+		try {
+			result = authDao.getUserMemberId(username);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoanApplicationException(e.getMessage());
+		}
+		return result;
+	}
 
 }

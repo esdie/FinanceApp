@@ -30,4 +30,9 @@ public class AuthenticationController {
 	public Customer register(@RequestBody Customer customer, @PathVariable String username, @PathVariable String password) {
 		return authService.registerService(customer, username, password);
 	}
+	
+	@GetMapping("/user/{username}")
+	public String getUserMemberId(@PathVariable String username) {
+		return authService.getUserMemberIdService(username);
+	}
 }

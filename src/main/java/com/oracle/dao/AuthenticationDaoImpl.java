@@ -32,7 +32,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, username);
 			ResultSet rs = pstmt.executeQuery();
-			exists = rs.next();
+			return rs.next();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -51,6 +51,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 	public String login(String username, String password) {
 		Connection con = dbConnection.connect();
 		String role = null;
+		String user = "";
 		try {
 			if(!userExists(username)) {
 				throw new LoanApplicationException("Invalid Username/Password");
@@ -62,6 +63,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			ResultSet rs = pstmt.executeQuery();
 			if(rs.next()) {
 				role = rs.getString("role");
+				user = rs.getString("username");
 			}
 			else {
 				throw new LoanApplicationException("Invalid Username/Password");
@@ -76,7 +78,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 				e.printStackTrace();
 			}
 		}
-		return role;
+		return role + " "+ user;
 	}
 	public boolean checkCustomer(String username) {
 		Connection con = dbConnection.connect();
@@ -173,6 +175,34 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 		}
 		
 		return customer;
+	}
+	@Override
+	public String getUserMemberId(String username) {
+		Connection con = dbConnection.connect();
+		String memberId = null;
+		try {
+			
+			String sql = "select member_id from users where username =?";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()) {
+				memberId = rs.getString("member_id");
+			}
+			else {
+				throw new LoanApplicationException("Invalid Credentials");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return memberId;
 	}
 
 }
