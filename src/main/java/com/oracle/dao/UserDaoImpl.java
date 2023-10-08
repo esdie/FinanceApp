@@ -188,12 +188,8 @@ public class UserDaoImpl implements UserDao {
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, username);
 			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
+			if(rs.next()) {
 				memberId = rs.getString("member_id");
-				//System.out.println(memberId);
-			}
-			if(memberId != null) {
-				return memberId;
 			}
 			else {
 				throw new LoanApplicationException("Invalid Credentials");
@@ -208,7 +204,7 @@ public class UserDaoImpl implements UserDao {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return memberId;
 	}
 	@Override
 	public boolean updateUserEmail(String email, String member_id, String role) {
@@ -287,7 +283,7 @@ public class UserDaoImpl implements UserDao {
 			pstmt.setString(1, password);
 			pstmt.setString(2, member_id);
 			int count = pstmt.executeUpdate();
-			//System.out.println(count);
+			System.out.println(count);
 			if(count > 0) {
 				return true;
 			}
@@ -326,8 +322,8 @@ public class UserDaoImpl implements UserDao {
 				customer.setEmail(rs.getString("email"));
 				customer.setGender(rs.getString("gender"));
 				customer.setPan_number(rs.getString("pan_number"));
-				customer.setAadhar_number(rs.getString("aadhar_number"));
-				customer.setUsername(rs.getString("username"));
+				customer.setAadhar_number("aadhar_number");
+				customer.setUsername("username");
 			}
 			if(customer == null){
 				throw new LoanApplicationException("Could not find customer");
@@ -366,7 +362,6 @@ public class UserDaoImpl implements UserDao {
 				employee.setBranch(rs.getString("branch"));
 				employee.setUsername(rs.getString("username"));
 			}
-			System.out.println("emp" + employee.getUsername());
 			if(employee == null){
 				throw new LoanApplicationException("Could not find employee");
 			}
