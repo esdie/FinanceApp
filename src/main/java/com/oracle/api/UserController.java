@@ -33,7 +33,7 @@ public class UserController {
 		return authService.registerService(customer, username, password);
 	}
 	
-	@GetMapping("/user/{username}")
+	@PostMapping("/user/{username}")
 	public String getUserMemberId(@PathVariable String username) {
 		return authService.getUserMemberIdService(username);
 	}
