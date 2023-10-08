@@ -18,5 +18,6 @@ public interface LoanDao {
 	 public List<LoanApplication> searchLoanApplicationByCustomer(String customer_id);
 	 public List<LoanApplication> searchLoanApplicationByStatus(String loan_status);
 	 public List<LoanApplication> searchLoanApplicationByClerkId(String clerk_id);
+	 public double getInterestRate(int loan_id);
 
 }

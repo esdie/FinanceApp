@@ -1,6 +1,6 @@
 package com.oracle.entity;
 import java.sql.Date;
-public class LoanAccount {
+public class LoanAccount extends Object {
 	private String loan_account_number;
 	private String loan_application_number;
 	private String customer_id;
@@ -9,7 +9,22 @@ public class LoanAccount {
 	private String loan_status;
 	private double emi;
 	private double disbursed_amount;
+	private double interest_rate;
+	@Override
+	public String toString() {
+		return "LoanAccount [loan_account_number=" + loan_account_number + ", loan_application_number="
+				+ loan_application_number + ", customer_id=" + customer_id + ", loan_id=" + loan_id
+				+ ", loan_amount_sanctioned=" + loan_amount_sanctioned + ", loan_status=" + loan_status + ", emi=" + emi
+				+ ", disbursed_amount=" + disbursed_amount + ", loan_tenure=" + loan_tenure + ", approval_date="
+				+ approval_date + ", interest_rate=" + interest_rate+ "]";
+	}
 	private int loan_tenure;
+	public double getInterest_rate() {
+		return interest_rate;
+	}
+	public void setInterest_rate(double interest_rate) {
+		this.interest_rate = interest_rate;
+	}
 	private Date approval_date;
 	public LoanAccount() {
 		
@@ -74,5 +89,21 @@ public class LoanAccount {
 	public void setApproval_date(Date approval_date) {
 		this.approval_date = approval_date;
 	}
-	
+	public LoanAccount(String loan_account_number, String loan_application_number, String customer_id, int loan_id,
+			double loan_amount_sanctioned, String loan_status, double emi, double disbursed_amount,
+			double interest_rate, int loan_tenure, Date approval_date) {
+		super();
+		this.loan_account_number = loan_account_number;
+		this.loan_application_number = loan_application_number;
+		this.customer_id = customer_id;
+		this.loan_id = loan_id;
+		this.loan_amount_sanctioned = loan_amount_sanctioned;
+		this.loan_status = loan_status;
+		this.emi = emi;
+		this.disbursed_amount = disbursed_amount;
+		this.interest_rate = interest_rate;
+		this.loan_tenure = loan_tenure;
+		this.approval_date = approval_date;
+		
+	}
 }

@@ -7,14 +7,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.oracle.entity.LoanAccount;
 import com.oracle.entity.LoanApplication;
+import com.oracle.entity.LoanBalance;
 import com.oracle.entity.Loans;
 import com.oracle.exception.LoanApplicationException;
 import com.oracle.repository.DBConnection;
@@ -293,14 +297,14 @@ System.out.println(resultList.size());
 		return result;
 	}
 
-	public LoanAccount makeLoanAccount(LoanApplication loan_application, double amount_sanctioned, int tenure) {
+	public LoanAccount makeLoanAccount(LoanApplication loan_application, double amount_sanctioned, int tenure, double interest_rate) {
 		LoanAccount account = null;
 		Connection con=	dbConnection.connect();
 		try {
 			account = new LoanAccount();
 			String account_number=UUID.randomUUID().toString();
 			Date application_date = new Date(System.currentTimeMillis());
-			String query="INSERT INTO LOAN_ACCOUNT VALUES(?,?,?,?,?,?,?,?,?,?)";
+			String query="INSERT INTO LOAN_ACCOUNT VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1,account_number);
 			account.setLoan_account_number(account_number);
@@ -314,15 +318,21 @@ System.out.println(resultList.size());
 			account.setLoan_amount_sanctioned(amount_sanctioned);
 			ps.setString(6, "ONGOING");
 			account.setLoan_status("ONGOING");
-			double emi = 12;
-			ps.setDouble(7,amount_sanctioned / tenure);
-			account.setEmi(amount_sanctioned / tenure);
-			ps.setDouble(8, 0);
-			account.setDisbursed_amount(0);
+			double r = interest_rate;
+			double n = tenure;
+			r = r/100;
+			r = r / 12;
+			double emi = (amount_sanctioned * r *((Math.pow(1 + r, n))/((Math.pow((1 + r), n) - 1))));
+			ps.setDouble(7, emi);
+			account.setEmi(emi);
+			ps.setDouble(8, amount_sanctioned);
+			account.setDisbursed_amount(amount_sanctioned);
 			ps.setInt(9,tenure);
 			account.setLoan_tenure(tenure);
 			ps.setDate(10, application_date);
 			account.setApproval_date(application_date);
+			ps.setDouble(11, interest_rate);
+			account.setInterest_rate(interest_rate);
 			int res=ps.executeUpdate();
 			
 		}
@@ -368,24 +378,29 @@ System.out.println(resultList.size());
 
 	@Override
 	public List<LoanApplication> approveLoanApplication(String loan_application_number, double amount_sanctioned, int tenure) {
-		Connection con=	dbConnection.connect();
+		Connection con = null;
 		List<LoanApplication> result = null;
+		
 		try {
-			
-			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = 'APPROVED' WHERE LOAN_APPLICATION_NUMBER = ? AND APPLICATION_STATUS != 'APPROVED'";
+			con = dbConnection.connect();
+			String query="UPDATE LOAN_APPLICATION SET APPLICATION_STATUS = 'APPROVED' WHERE LOAN_APPLICATION_NUMBER = ? AND APPLICATION_STATUS = 'PENDING'";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1, loan_application_number);
 			int res=ps.executeUpdate();
 			System.out.println("res: "+res);
 			if(res ==0) {
-				throw new LoanApplicationException();
+				throw new LoanApplicationException("Could not approve");
 			}
 			LoanApplication appl = searchLoanApplicationByNumber(loan_application_number);
-			System.out.println(makeLoanAccount(appl, amount_sanctioned, tenure));
+			double interest_rate = getInterestRate(appl.getLoan_id());
+			LoanAccount acc = makeLoanAccount(appl, amount_sanctioned, tenure, interest_rate);
+			System.out.println(acc);
+			LoanBalance bal = insertIntoLoanBalance(acc, interest_rate);
+			System.out.println(bal);
 			result = getAllLoanApplication();
-			
 		} catch (Exception e) {
 			System.out.println(e);
+			throw new LoanApplicationException(" Could not approve");
 		}
 		finally {
 			try {
@@ -395,6 +410,50 @@ System.out.println(resultList.size());
 			}
 		}
 		return result;
+	}
+
+	public LoanBalance insertIntoLoanBalance(LoanAccount loan_account, double interest_rate) {
+		Connection con = null;
+		try {
+			LoanBalance bal = new LoanBalance();
+			con = dbConnection.connect();
+			String query="insert into loan_balance values(?, ?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setDouble(1, 0);
+			bal.setPrincipal_paid(0);
+			ps.setDouble(2, 0);
+			bal.setInterest_paid(0);
+			ps.setString(3, loan_account.getLoan_account_number());
+			bal.setLoan_account_number(loan_account.getLoan_account_number());
+			ps.setString(4,  loan_account.getCustomer_id());
+			bal.setCustomer_id(loan_account.getCustomer_id());
+			double outstanding_balance = loan_account.getEmi() * loan_account.getLoan_tenure();
+			ps.setDouble(5, outstanding_balance);
+			bal.setOutstanding_balance(outstanding_balance);
+			ps.setInt(6, loan_account.getLoan_tenure());
+			bal.setTenure_remaining(loan_account.getLoan_tenure());
+			ps.setDouble(7, interest_rate);
+			bal.setInterest_rate(interest_rate);
+			ps.setDouble(8, loan_account.getLoan_amount_sanctioned());
+			bal.setCurrent_principal(loan_account.getLoan_amount_sanctioned());
+			int res=ps.executeUpdate();
+			System.out.println(" loan balance: "+res);
+			if(res ==0) {
+				throw new LoanApplicationException("Could not make loan balance");
+			}
+			System.out.println("balance: "+bal);
+			return bal;
+		} catch (Exception e) {
+			System.out.println(e);
+			throw new LoanApplicationException(" Could not make loan balance");
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -517,7 +576,34 @@ System.out.println(resultList.size());
 		return resultList;
 	}
 
+	@Override
+	public double getInterestRate(int loan_id) {
+		double interest_rate = 0;
+		Connection con=	dbConnection.connect();
+		try {
+			String sql="select interest_rate from loans where loan_code = ?";
+			PreparedStatement pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, loan_id);
+			ResultSet rs= pstmt.executeQuery();
+			//System.out.println("connected.. + executed");
+			while( rs.next()) {
+				interest_rate = rs.getDouble("interest_rate");
+				System.out.println("interest: "+ interest_rate);
+			}	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new LoanApplicationException("Could not get rate of interest");
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return interest_rate;
+	}
 	
+		
 	
-
 }
