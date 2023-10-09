@@ -334,7 +334,7 @@ System.out.println(resultList.size());
 			ps.setDouble(11, interest_rate);
 			account.setInterest_rate(interest_rate);
 			int res=ps.executeUpdate();
-			
+			System.out.println("customer id:");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
