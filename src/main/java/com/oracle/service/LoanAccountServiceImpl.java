@@ -111,7 +111,7 @@ public class LoanAccountServiceImpl implements LoanAccountService{
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-			String msg = "Could not find Loan Accounts";
+			String msg = "Could not find Loan Balance";
 			throw new LoanApplicationException(msg);
 		}
 		return res;
