@@ -102,5 +102,19 @@ public class LoanAccountServiceImpl implements LoanAccountService{
 		return res;
 
 	}
+	@Override
+	public List<LoanBalance> getLoanBalanceCustomerService(String customer_id) {
+		List<LoanBalance> res;
+		try {
+			res = loanAccountDao.getLoanBalanceCustomer(customer_id);
+			if(res.size() == 0) throw new LoanApplicationException();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			String msg = "Could not find Loan Accounts";
+			throw new LoanApplicationException(msg);
+		}
+		return res;
+	}
 
 }

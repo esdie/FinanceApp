@@ -530,4 +530,45 @@ public class LoanAccountDaoImpl implements  LoanAccountDao{
 		
 	}
 
+	@Override
+	public List<LoanBalance> getLoanBalanceCustomer(String customer_id) {
+		Connection con=	dbConnection.connect();
+		List<LoanBalance> resultList = new ArrayList<>();
+		try {
+			String sql="select * from loan_balance where customer_id = ?";
+			PreparedStatement pstmt=con.prepareStatement(sql);
+			pstmt.setString(1, customer_id);
+			ResultSet rs= pstmt.executeQuery();
+//			System.out.println(customer_id);
+			while( rs.next()) {
+				
+				LoanBalance loanBalance = new LoanBalance();
+				loanBalance.setPrincipal_paid(rs.getDouble("principal_paid"));
+				loanBalance.setInterest_paid(rs.getDouble("interest_paid"));
+				loanBalance.setLoan_account_number(rs.getString("loan_account_number"));
+				loanBalance.setCustomer_id(rs.getString("customer_id"));
+				loanBalance.setOutstanding_balance(rs.getDouble("outstanding_balance"));
+				loanBalance.setTenure_remaining(rs.getInt("tenure_remaining"));
+				loanBalance.setInterest_rate(rs.getDouble("interest_rate"));
+				loanBalance.setCurrent_principal(rs.getDouble("current_principal"));
+				resultList.add(loanBalance);
+				System.out.println("inside");
+				
+			}
+			if(resultList.size() == 0) {
+				throw new LoanApplicationException("Could not find balance");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return resultList;
+	}
+
 }

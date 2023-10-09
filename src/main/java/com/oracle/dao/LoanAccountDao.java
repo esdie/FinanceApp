@@ -13,4 +13,5 @@ public interface LoanAccountDao {
 	public LoanAccount getAllLoanAccountByNumber(String loan_account_number);
 	public boolean makeTransaction(String loan_account_number, double amount);
 	public LoanBalance getLoanBalance(String loan_account_number);
+	public List<LoanBalance> getLoanBalanceCustomer(String customer_id);
 }

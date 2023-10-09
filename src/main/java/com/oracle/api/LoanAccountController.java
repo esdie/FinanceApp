@@ -51,5 +51,9 @@ public class LoanAccountController {
 	public LoanBalance getLoanBalance(@PathVariable String loan_account_number) {
 		return loanAccountService.getLoanBalanceService(loan_account_number);
 	}
-
+	
+	@PostMapping("loanBalance/get/customer/{customer_id}")
+	public List<LoanBalance> getLoanBalanceCustomer(@PathVariable String customer_id) {
+		return loanAccountService.getLoanBalanceCustomerService(customer_id);
+	}
 }

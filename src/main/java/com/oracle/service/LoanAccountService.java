@@ -20,4 +20,6 @@ public interface LoanAccountService {
 
 	public LoanBalance getLoanBalanceService(String loan_account_number);
 
+	public List<LoanBalance> getLoanBalanceCustomerService(String customer_id);
+
 }
